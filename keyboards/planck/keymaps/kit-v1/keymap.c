@@ -22,6 +22,7 @@ enum planck_layers {
   _QWERTY,
   _COLEMAK,
   _DVORAK,
+  _DOTA,
   _LOWER,
   _RAISE,
   _PLOVER,
@@ -32,6 +33,7 @@ enum planck_keycodes {
   QWERTY = SAFE_RANGE,
   COLEMAK,
   DVORAK,
+  DOTA,
   PLOVER,
   BACKLIT,
   EXT_PLV
@@ -96,6 +98,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     BACKLIT, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 ),
 
+/* Dota (same as Colemak but with alt / lower swapped)
+ * ,-----------------------------------------------------------------------------------.
+ * | Esc  |   Q  |   W  |   F  |   P  |   G  |   J  |   L  |   U  |   Y  |   ;  |  `~  |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * | Bksp |   A  |   R  |   S  |   T  |   D  |   H  |   N  |   E  |   I  |   O  |  '   |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * | Shift|   Z  |   X  |   C  |   V  |   B  |   K  |   M  |   ,  |   .  |   /  |Enter |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * | Ctrl | Ctrl | GUI  |Lower | Alt  |    Space    |Raise | Left | Down |  Up  |Right |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_DOTA] = LAYOUT_planck_grid(
+    KC_ESC,  KC_Q,    KC_W,    KC_F,    KC_P,    KC_G,    KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN, KC_GRV,
+    KC_BSPC, KC_A,    KC_R,    KC_S,    KC_T,    KC_D,    KC_H,    KC_N,    KC_E,    KC_I,    KC_O,    KC_QUOT,
+    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_K,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT ,
+    KC_LCTL, KC_LCTL, KC_LGUI, LOWER,   KC_LALT, KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+),
+
 /* Lower
  * ,-----------------------------------------------------------------------------------.
  * |  Tab |   1  |   2  |   3  |   4  |   5  |   6  |   7  |   8  |   9  |   0  | Del  |
@@ -151,22 +171,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 /* Adjust (Lower + Raise)
- *                                                  v------- Mode control ------v
  * ,-----------------------------------------------------------------------------------.
- * |Colemk|      |      |      |      |      |      |Qwerty|      |Dvorak|Plover| Reset|
+ * |Colemk| Dota |      |      |      |      |      |      |      |      |      | Reset|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |MsWhU | MsUp |MsWhD |      |      | MsLC | MsRC |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      | MsLft| MsDn | MsRt |      |      |      |      |      |      |      |
+ * |      |      | MsLft| MsDn | MsRt |      |      |      |      |RGBSAD|RGBSAI|      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      |      |      |      |      |
+ * |      |      |      |      |      |             |      |RGBTOG| RGBUP| RGBDN|RGBHUE|
  * `-----------------------------------------------------------------------------------'
+ *                                                         ^------- RGB control -------^
  */
 [_ADJUST] = LAYOUT_planck_grid(
-    COLEMAK, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, RESET  ,
+    COLEMAK, DOTA, _______, _______, _______, _______, _______, _______, _______,  _______, _______, RESET  ,
     KC_ACL2, _______, KC_WH_D, KC_MS_U, KC_WH_U, _______, _______, KC_BTN1, KC_BTN2,  _______, _______, _______,
-    KC_ACL0, _______, KC_MS_L, KC_MS_D, KC_MS_R, _______, _______, _______, _______,  _______, _______, _______,
-    KC_ACL1, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
+    KC_ACL0, _______, KC_MS_L, KC_MS_D, KC_MS_R, _______, _______, _______, _______,  RGB_SAD, RGB_SAI, _______,
+    KC_ACL1, _______, _______, _______, _______, _______, _______, _______, RGB_TOG,  RGB_VAD, RGB_VAI, RGB_HUI
 )
 
 };
@@ -192,6 +212,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case COLEMAK:
       if (record->event.pressed) {
         set_single_persistent_default_layer(_COLEMAK);
+      }
+      return false;
+      break;
+    case DOTA:
+      if (record->event.pressed) {
+        set_single_persistent_default_layer(_DOTA);
       }
       return false;
       break;
